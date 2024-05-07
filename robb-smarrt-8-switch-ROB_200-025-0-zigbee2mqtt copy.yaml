@@ -1,0 +1,64 @@
+blueprint:
+  name: Robb smarrt 8-button switch zigbee2mqtt
+  description: 'This blueprint is for the  Robb smarrt 8-button switch panel (ROBB
+    ROB_200-025-0) when used with zigbee2mqtt.
+
+    It is for general use so all buttons can be connected to any action of your choice.
+    This remote supports short button clicks and long button presses (over 4 seconds)
+
+    Make sure to select the correct sensor for the remote.'
+  domain: automation
+  source_url: https://github.com/thejinxnl/ha-blueprints/blob/main/robb-smarrt-8-switch-ROB_200-025-0-zigbee2mqtt.yaml
+  input:
+    remote:
+      name: Remote
+      description: Switch remote to use
+      selector:
+        entity:
+          multiple: false
+          filter: 
+            - integration: mqtt
+              domain: sensor
+    on_button_1_short:
+      name: On button 1 - short
+      default: []
+      selector:
+        action: {}
+    off_button_1_short:
+      name: Off button 1 - short
+      default: []
+      selector:
+        action: {}
+    on_button_1_long:
+      name: On button 1 - long press
+      default: []
+      selector:
+        action: {}
+    off_button_1_long:
+      name: Off button 1 - long press
+      default: []
+      selector:
+        action: {}
+mode: restart
+max_exceeded: silent
+trigger:
+- platform: device
+  domain: mqtt
+  device_id: !input remote
+  type: action
+action:
+- variables:
+    cmd: '{{ trigger.subtype }}'
+- choose:
+  - conditions:
+    - '{{ cmd == ''on_1'' }}'
+    sequence: !input on_button_1_short
+  - conditions:
+    - '{{ cmd == ''off_1'' }}'
+    sequence: !input off_button_1_short
+  - conditions:
+    - '{{ cmd == ''brightness_move_up_1'' }}'
+    sequence: !input on_button_1_long
+  - conditions:
+    - '{{ cmd == ''brightness_move_down_1'' }}'
+    sequence: !input off_button_1_long
