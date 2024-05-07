@@ -118,9 +118,8 @@ blueprint:
 mode: restart
 max_exceeded: silent
 trigger:
-- platform: state
-  entity_id: !input remote
-  attribute: action
+- platform: mqtt
+  topic: "zigbee2mqtt/Switch 8-button Woonkamer/action"
 action:
 - variables:
     command: '{{ trigger.payload }}'
